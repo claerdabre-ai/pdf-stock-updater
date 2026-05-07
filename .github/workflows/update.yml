@@ -1,0 +1,33 @@
+name: Update PDF Stock Daily
+
+on:
+  schedule:
+    - cron: '0 2 * * *'   # Runs daily (UTC)
+  workflow_dispatch:      # Manual run button
+
+jobs:
+  update-pdf:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install libraries
+      run: pip install -r requirements.txt
+
+    - name: Run script
+      run: python update_stock.py
+
+    - name: Commit updated PDF
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "actions@github.com"
+        git add .
+        git commit -m "Auto update stock"
+        git push
